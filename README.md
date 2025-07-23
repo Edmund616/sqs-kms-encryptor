@@ -1,41 +1,14 @@
-# sqs-kms-encryptor
+## Why SQS Encryption Is Necessary
 
-This project encrypts all SQS queues in an AWS account using a specified KMS key.  
-It can run as a Lambda function or via CLI.
+Amazon SQS (Simple Queue Service) is a managed message queuing service that helps decouple microservices and distributed systems. However, the data passed through these queues can often be sensitive — containing user information, internal operations data, or system events.
 
-## Structure
+Encrypting SQS messages at rest is essential for:
+- **Data Security**: Prevent unauthorized access in case of data breach or compromised AWS account.
+- **Compliance Requirements**: Encryption helps meet standards such as HIPAA, PCI-DSS, and GDPR.
+- **Fine-Grained Access Control**: With KMS (Key Management Service), you can define which IAM roles/users can access or decrypt the messages.
+- **Auditing and Logging**: AWS CloudTrail allows you to track the use of encryption keys, improving visibility into data access patterns.
 
-- `src/`: Main logic
-- `lambda/`: Lambda handler
-- `deploy/`: Terraform and SAM deployment options
+In this project, we use a customer-managed KMS key to encrypt SQS messages, ensuring secure data transit between services.
 
-## Usage
-
-### Lambda
-- Deploy using `deploy/terraform` or `deploy/sam`
-
-### CLI
-```bash
-python src/main.py
-
-
----
-
-### 📁 `deploy/terraform/main.tf`
-
-```bash
-mkdir -p deploy/terraform
-nano deploy/terraform/main.tf
-
-provider "aws" {
-  region = "us-east-1"
-}
-
-resource "aws_lambda_function" "encryptor" {
-  filename         = "function.zip"
-  function_name    = "sqs-kms-encryptor"
-  role             = aws_iam_role.lambda_exec.arn
-  handler          = "lambda_function.lambda_handler"
-  runtime          = "python3.11"
-  source_code_hash = filebase64sha256("function.zip")
-}
+Everything on this project has been thoroughly explained on my mediums post link below
+https://medium.com/@divyln20/automatically-encrypt-your-aws-sqs-queues-with-kms-using-lambda-4bfe30c706ea
